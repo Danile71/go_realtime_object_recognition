@@ -30,6 +30,9 @@ func main() {
 	}
 	defer webcam.Close()
 
+	webcam.Set(gocv.VideoCaptureFrameWidth, 720)
+	webcam.Set(gocv.VideoCaptureFrameHeight, 480)
+
 	window := gocv.NewWindow("Capture Window")
 	defer window.Close()
 
@@ -62,7 +65,7 @@ func main() {
 		for i := 0; i < detection.Total(); i += 7 {
 			confidence := detection.GetFloatAt(0, i+2)
 
-			if confidence > 0.2 {
+			if confidence > 0.4 {
 				id := int(detection.GetFloatAt(0, i+1))
 				left := int(detection.GetFloatAt(0, i+3) * float32(img.Cols()))
 				top := int(detection.GetFloatAt(0, i+4) * float32(img.Rows()))
@@ -70,7 +73,7 @@ func main() {
 				bottom := int(detection.GetFloatAt(0, i+6) * float32(img.Rows()))
 				r := image.Rect(left, top, right, bottom)
 				gocv.Rectangle(&img, r, color.RGBA{0, 0, 255, 0}, 2)
-				gocv.PutText(&img, CLASSES[id], image.Pt(r.Min.X, r.Min.Y), gocv.FontItalic, 1.0, color.RGBA{0, 0, 255, 0}, 2)
+				gocv.PutText(&img, fmt.Sprintf("%s:%f", CLASSES[id], confidence), image.Pt(r.Min.X, r.Min.Y), gocv.FontItalic, 1.0, color.RGBA{0, 0, 255, 0}, 2)
 			}
 		}
 
